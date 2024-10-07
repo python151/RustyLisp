@@ -5,19 +5,23 @@ use std::path::Path;
 use std::fs::read_to_string;
 use std::fs::File;
 use std::io::ErrorKind;
-use std::collections::HashMap;
 
 
 use parser::parse;
 use AST::print_ast;
+use evaluator::eval;
 
 mod symbol;
 mod AST;
 mod parser;
+mod evaluator;
+mod standard_lib;
 
 fn interpret_line(str: String) {
     let ast = parse(str);
-    print_ast(">".to_string(), ast);
+    print_ast(">".to_string(), ast.clone());
+    let evaluated = eval(ast);
+    print_ast(">".to_string(), evaluated);
 }
 
 
