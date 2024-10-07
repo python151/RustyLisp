@@ -5,11 +5,28 @@ use regex::Regex;
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use crate::symbol::{self, Symbol};
+use crate::standard_lib::{add, divide, multiply, subtract};
+use crate::symbol::{self, FunctionStruct, Symbol};
 use crate::AST::{self, wrap_symbol, AST_Node};
 
 pub fn parse(line: String) -> Rc<RefCell<AST_Node>>  {
     let mut symbol_table = HashMap::<String, symbol::Symbol>::new();
+    symbol_table.insert("add".to_string(), Symbol::Function(FunctionStruct {
+        name: "add".to_string(),
+        function: add
+    })); 
+    symbol_table.insert("sub".to_string(), Symbol::Function(FunctionStruct {
+        name: "subtract".to_string(),
+        function: subtract
+    })); 
+    symbol_table.insert("mul".to_string(), Symbol::Function(FunctionStruct {
+        name: "multiply".to_string(),
+        function: multiply
+    })); 
+    symbol_table.insert("div".to_string(), Symbol::Function(FunctionStruct {
+        name: "divide".to_string(),
+        function: divide
+    })); 
 
     let str_tokens = tokenize_line(&line, &mut symbol_table);
 
@@ -128,7 +145,7 @@ fn parse_strings(line: &String, symbol_table: &mut HashMap<String, symbol::Symbo
     cur_line
 }
 
-// TODO: Implement checks to ensure this will actually fit into a 64 bit integer
+// TODO: Implement checks to ensure this will actually fit into a 32 bit integer
 // Also, consider making arbitrarily sized integers
 fn parse_int(tokens: Vec<String>, symbol_table: &mut HashMap<String, symbol::Symbol>) -> Vec<String> {
     let mut i = 0;
@@ -138,7 +155,7 @@ fn parse_int(tokens: Vec<String>, symbol_table: &mut HashMap<String, symbol::Sym
             // Check if the token can be parsed as an integer
             if x.parse::<i64>().is_ok() {
                 let name = format!("int{}", i);
-                let sym = symbol::Symbol::Int(x.parse::<i64>().unwrap());
+                let sym = symbol::Symbol::Int(x.parse::<i32>().unwrap());
                 symbol_table.insert(name.clone(), sym); // Insert the symbol
                 i += 1;
                 name // Return the name directly
