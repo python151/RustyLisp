@@ -5,9 +5,19 @@ use crate::{symbol::{self, FunctionStruct, Symbol}, AST::get_first};
 pub fn construct_symbol_table() -> HashMap::<String, symbol::Symbol> {
     let mut symbol_table = HashMap::<String, symbol::Symbol>::new();
 
+    // Effectively macros the true and false identifiers to the bool symbol
+    symbol_table.insert("true".to_string(), Symbol::Bool(true));
+    symbol_table.insert("false".to_string(), Symbol::Bool(false));
+
+    // Manually adds each of our standard library functions
+    // TODO: Come up with a much better way to do this
     symbol_table.insert("assert".to_string(), Symbol::Function(FunctionStruct {
         name: "assert".to_string(),
         function: assert
+    })); 
+    symbol_table.insert("concat".to_string(), Symbol::Function(FunctionStruct {
+        name: "concat".to_string(),
+        function: concat
     })); 
     symbol_table.insert("add".to_string(), Symbol::Function(FunctionStruct {
         name: "add".to_string(),
@@ -31,7 +41,7 @@ pub fn construct_symbol_table() -> HashMap::<String, symbol::Symbol> {
 
 pub fn assert(args: Vec<Symbol>) -> Symbol {
     if args.clone().len() < 1 {
-        return Symbol::Int(1);
+        return Symbol::Bool(true);
     }
 
     let binding = args.clone();
@@ -42,8 +52,24 @@ pub fn assert(args: Vec<Symbol>) -> Symbol {
         }
     }
 
+    return Symbol::Bool(true);
+}
 
-    return Symbol::Int(1);
+pub fn concat(args: Vec<Symbol>) -> Symbol {
+    let mut total = "".to_string();
+
+    for arg in args {
+        match arg {
+            Symbol::Str(x) => {
+                total += &x;
+            }
+            _ =>  {
+                panic!("Add only accepts str types, not {:?}", arg);
+            }
+        }
+    }
+
+    return Symbol::Str(total);
 }
 
 pub fn add(args: Vec<Symbol>) -> Symbol {
@@ -64,7 +90,6 @@ pub fn add(args: Vec<Symbol>) -> Symbol {
     return Symbol::Double(total);
 }
 
-// TODO: Make this not shit
 pub fn subtract(args: Vec<Symbol>) -> Symbol {
     if args.len() != 2 {
         panic!("Subtract function must take 2 arguments, but is given {}", args.len());
@@ -89,7 +114,6 @@ pub fn subtract(args: Vec<Symbol>) -> Symbol {
     return Symbol::Double(total);
 }
 
-// TODO: Make this not shit
 pub fn divide(args: Vec<Symbol>) -> Symbol {
     if args.len() != 2 {
         panic!("Divide function must take 2 arguments, but is given {}", args.len());

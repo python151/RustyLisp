@@ -116,6 +116,7 @@ fn parse_strings(line: &String, symbol_table: &mut HashMap<String, symbol::Symbo
             i += 1;
             let sym = symbol::Symbol::Str(cur_str.clone());
             symbol_table.insert(name.clone(), sym); // Insert the symbol
+            cur_str = "".to_string();
             cur_line = format!("{}{}", cur_line, name);
         } else if is_string {
             cur_str = format!("{}{}", cur_str, c);

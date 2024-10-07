@@ -12,6 +12,7 @@ pub enum Symbol {
     Int(i32),
     Double(f64),
     Function(FunctionStruct),
+    Bool(bool),
     Sexp,
 } 
 
@@ -20,6 +21,7 @@ impl fmt::Display for Symbol {
         match self {
             &Symbol::Sexp => write!(f, "Sexp"),
             Symbol::Str(s) => write!(f, "String value: {}", s),
+            Symbol::Bool(s) => write!(f, "Bool value: {}", s),
             Symbol::Int(i) => write!(f, "Integer value: {}", i),
             Symbol::Double(s) => write!(f, "Double value: {}", s),
             Symbol::Function(fun) => write!(f, "Function: {}", fun.name),
@@ -51,6 +53,12 @@ impl PartialEq for Symbol {
                 }
                 false
             }
+            Symbol::Bool(b) => {
+                if let Symbol::Bool(b1) = other {
+                    return *b == *b1;
+                }
+                false
+            }
             Symbol::Int(int) => {
                 if let Symbol::Int(int1) = other {
                     return *int == *int1;
@@ -78,8 +86,4 @@ impl PartialEq for Symbol {
             }
         }
     }
-}
-
-impl Eq for Symbol {
-
 }
