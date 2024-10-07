@@ -5,7 +5,7 @@ use regex::Regex;
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use crate::standard_lib::add;
+use crate::standard_lib::{add, subtract};
 use crate::symbol::{self, FunctionStruct, Symbol};
 use crate::AST::{self, wrap_symbol, AST_Node};
 
@@ -14,6 +14,10 @@ pub fn parse(line: String) -> Rc<RefCell<AST_Node>>  {
     symbol_table.insert("add".to_string(), Symbol::Function(FunctionStruct {
         name: "add".to_string(),
         function: add
+    })); 
+    symbol_table.insert("sub".to_string(), Symbol::Function(FunctionStruct {
+        name: "subtract".to_string(),
+        function: subtract
     })); 
 
     let str_tokens = tokenize_line(&line, &mut symbol_table);

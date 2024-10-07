@@ -19,3 +19,39 @@ pub fn add(args: Vec<Symbol>) -> Symbol {
     }
     return Symbol::Double(total);
 }
+
+// TODO: Make this not shit
+pub fn subtract(args: Vec<Symbol>) -> Symbol {
+    if args.len() != 2 {
+        panic!("Subtract function must take 2 arguments, but is given {}", args.len());
+    }
+
+    let mut total: f64 = 0.;
+    let mut flag = false;
+    for arg in args {
+        match arg {
+            Symbol::Int(x) => {
+                if flag {
+                    total -= f64::from(x);
+                    flag = true;
+                } else {
+                    total += f64::from(x);
+                    flag = true
+                }
+            }
+            Symbol::Double(x) => {
+                if flag {
+                    total -= x;
+                    flag = true;
+                } else {
+                    total += x;
+                    flag = true
+                }
+            }
+            _ =>  {
+                panic!("Subtract only accepts Int and Double types, not {:?}", arg);
+            }
+        }
+    }
+    return Symbol::Double(total);
+}
