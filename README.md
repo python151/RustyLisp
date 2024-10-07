@@ -25,4 +25,4 @@ Working with strings:
 <br>
 Basic division:
 <br>
-`divide 3 4 ; produces .75`
+`div 3 4 ; produces .75`
