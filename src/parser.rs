@@ -5,9 +5,9 @@ use regex::Regex;
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use crate::standard_lib::{add, construct_symbol_table, divide, multiply, subtract};
-use crate::symbol::{self, FunctionStruct, Symbol};
-use crate::AST::{self, wrap_symbol, AST_Node};
+use crate::standard_lib::construct_symbol_table;
+use crate::symbol::{self, Symbol};
+use crate::AST::{wrap_symbol, AST_Node};
 
 pub fn parse(line: String) -> Rc<RefCell<AST_Node>>  {
     let mut symbol_table = construct_symbol_table();

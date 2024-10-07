@@ -1,6 +1,6 @@
-use std::{borrow::Borrow, collections::HashMap};
+use std::{collections::HashMap, fmt::Arguments};
 
-use crate::{symbol::{self, FunctionStruct, Symbol}, AST::get_first};
+use crate::symbol::{self, FunctionStruct, Symbol};
 
 pub fn construct_symbol_table() -> HashMap::<String, symbol::Symbol> {
     let mut symbol_table = HashMap::<String, symbol::Symbol>::new();
@@ -10,7 +10,7 @@ pub fn construct_symbol_table() -> HashMap::<String, symbol::Symbol> {
     symbol_table.insert("false".to_string(), Symbol::Bool(false));
 
     // Manually adds each of our standard library functions
-    // TODO: Come up with a much better way to do this
+    // TODO: Come up with a better way to do this
     symbol_table.insert("assert".to_string(), Symbol::Function(FunctionStruct {
         name: "assert".to_string(),
         function: assert
@@ -18,6 +18,22 @@ pub fn construct_symbol_table() -> HashMap::<String, symbol::Symbol> {
     symbol_table.insert("concat".to_string(), Symbol::Function(FunctionStruct {
         name: "concat".to_string(),
         function: concat
+    })); 
+    symbol_table.insert("equals".to_string(), Symbol::Function(FunctionStruct {
+        name: "equals".to_string(),
+        function: equals
+    })); 
+    symbol_table.insert("nequals".to_string(), Symbol::Function(FunctionStruct {
+        name: "not equals".to_string(),
+        function: not_equals
+    })); 
+    symbol_table.insert("not".to_string(), Symbol::Function(FunctionStruct {
+        name: "not".to_string(),
+        function: logical_not
+    })); 
+    symbol_table.insert("if".to_string(), Symbol::Function(FunctionStruct {
+        name: "if".to_string(),
+        function: if_statement
     })); 
     symbol_table.insert("add".to_string(), Symbol::Function(FunctionStruct {
         name: "add".to_string(),
@@ -39,7 +55,7 @@ pub fn construct_symbol_table() -> HashMap::<String, symbol::Symbol> {
     return symbol_table;
 }
 
-pub fn assert(args: Vec<Symbol>) -> Symbol {
+fn assert(args: Vec<Symbol>) -> Symbol {
     if args.clone().len() < 1 {
         return Symbol::Bool(true);
     }
@@ -55,7 +71,57 @@ pub fn assert(args: Vec<Symbol>) -> Symbol {
     return Symbol::Bool(true);
 }
 
-pub fn concat(args: Vec<Symbol>) -> Symbol {
+fn equals(args: Vec<Symbol>) -> Symbol {
+    if args.clone().len() < 1 {
+        return Symbol::Bool(true);
+    } 
+
+    let binding = args.clone();
+    let fst = binding.first().unwrap();
+    for arg in args {
+        if (fst.clone() != arg) {
+            return Symbol::Bool(false);
+        }
+    }
+
+    return Symbol::Bool(true);
+}
+
+fn logical_not(args: Vec<Symbol>) -> Symbol {
+    if args.clone().len() != 1 {
+        panic!("Not only accepts 1 argument, not {}!", args.clone().len());
+    }
+    
+    let sym = args.first().unwrap();
+
+    if let Symbol::Bool(x) = sym {
+        return Symbol::Bool(!x);
+    }
+
+    panic!("Not only accepts Bool types, and {} is not a bool", sym);
+}
+
+fn not_equals(args: Vec<Symbol>) -> Symbol {
+    logical_not(vec![equals(args)])
+}
+
+fn if_statement(args: Vec<Symbol>) -> Symbol {
+    if args.clone().len() != 3 {
+        panic!("If statements must have exactly 3 arguments, not {}!", args.clone().len());
+    }
+
+    if let Symbol::Bool(condition) = args.first().unwrap() {
+        if *condition {
+            args.get(1).unwrap().clone()
+        } else {
+            args.last().unwrap().clone()
+        }
+    } else {
+        panic!("First argument to if must be of type Bool, not {}!", args.first().unwrap());
+    }
+}
+
+fn concat(args: Vec<Symbol>) -> Symbol {
     let mut total = "".to_string();
 
     for arg in args {
@@ -72,7 +138,7 @@ pub fn concat(args: Vec<Symbol>) -> Symbol {
     return Symbol::Str(total);
 }
 
-pub fn add(args: Vec<Symbol>) -> Symbol {
+fn add(args: Vec<Symbol>) -> Symbol {
     let mut total: f64 = 0.;
     for arg in args {
         match arg {
@@ -90,7 +156,7 @@ pub fn add(args: Vec<Symbol>) -> Symbol {
     return Symbol::Double(total);
 }
 
-pub fn subtract(args: Vec<Symbol>) -> Symbol {
+fn subtract(args: Vec<Symbol>) -> Symbol {
     if args.len() != 2 {
         panic!("Subtract function must take 2 arguments, but is given {}", args.len());
     }
@@ -114,7 +180,7 @@ pub fn subtract(args: Vec<Symbol>) -> Symbol {
     return Symbol::Double(total);
 }
 
-pub fn divide(args: Vec<Symbol>) -> Symbol {
+fn divide(args: Vec<Symbol>) -> Symbol {
     if args.len() != 2 {
         panic!("Divide function must take 2 arguments, but is given {}", args.len());
     }
@@ -138,7 +204,7 @@ pub fn divide(args: Vec<Symbol>) -> Symbol {
     return Symbol::Double(total);
 }
 
-pub fn multiply(args: Vec<Symbol>) -> Symbol {
+fn multiply(args: Vec<Symbol>) -> Symbol {
     let mut product: f64 = 1.;
     for arg in args {
         match arg {
