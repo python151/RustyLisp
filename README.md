@@ -17,7 +17,7 @@ My main goals of the project are as follows:
 
 Adding two integers:
 <br>
-`(add 1 2) ; produces 3` 
+`add 1 2 ; produces 3` 
 <br>
 Working with strings:
 <br>
@@ -26,3 +26,10 @@ Working with strings:
 Basic division:
 <br>
 `div 3 4 ; produces .75`
+If statemetns:
+<br>
+`(if (equals 1 1) "1 is 1" "1 is not 1")`
+<br>
+Assertions: 
+<br>
+`assert (sum 1.5 1.5) (div 6.0 2.0) 3.0`
