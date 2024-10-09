@@ -16,6 +16,7 @@ mod AST;
 mod parser;
 mod evaluator;
 mod standard_lib;
+mod statements;
 
 fn interpret_line(str: String) {
     let ast = parse(str);

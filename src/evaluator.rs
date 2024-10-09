@@ -21,6 +21,12 @@ pub fn eval(node: Rc<RefCell<AST_Node>>) -> Rc<RefCell<AST_Node>> {
         
         // Pass symbols into function pointer
         return wrap_symbol((fun.function)(symbol_args));
+    } else if let Symbol::Statement(statement) = sym {
+        // Remove the statement node
+        let args: Vec<_> = node.borrow().subnodes[1..].to_vec();
+
+        // Call statement
+        return wrap_symbol((statement.statement)(args));
     } else {
         panic!("Attempted to call expression with no function type, cannot evaluate!");
     }

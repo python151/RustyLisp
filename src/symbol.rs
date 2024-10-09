@@ -1,9 +1,18 @@
 use std::fmt;
 
+use crate::AST::AST_Node;
+use std::rc::Rc;
+use std::cell::RefCell;
+
 
 pub struct FunctionStruct {
     pub name: String,
     pub function: fn(Vec<Symbol>) -> Symbol,
+}
+
+pub struct StatementStruct {
+    pub name: String,
+    pub statement: fn(Vec<Rc<RefCell<AST_Node>>>) -> Symbol,
 }
 
 #[derive(Debug, Clone)]
@@ -12,6 +21,7 @@ pub enum Symbol {
     Int(i32),
     Double(f64),
     Function(FunctionStruct),
+    Statement(StatementStruct),
     Bool(bool),
     Sexp,
 } 
@@ -25,6 +35,7 @@ impl fmt::Display for Symbol {
             Symbol::Int(i) => write!(f, "Integer value: {}", i),
             Symbol::Double(s) => write!(f, "Double value: {}", s),
             Symbol::Function(fun) => write!(f, "Function: {}", fun.name),
+            Symbol::Statement(fun) => write!(f, "Statement: {}", fun.name),
         }
     }
 }
@@ -38,11 +49,27 @@ impl Clone for FunctionStruct {
     }
 }
 
+impl Clone for StatementStruct {
+    fn clone(&self) -> Self {
+        StatementStruct {
+            name: self.name.clone(),
+            statement: self.statement.clone()
+        }
+    }
+}
+
+
 impl fmt::Debug for FunctionStruct {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "FunctionStruct {{ name: {} }}", self.name)
     }
 }
+impl fmt::Debug for StatementStruct {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "StatementStruct {{ name: {} }}", self.name)
+    }
+}
+
 
 impl PartialEq for Symbol {
     fn eq(&self, other: &Self) -> bool {
@@ -74,6 +101,12 @@ impl PartialEq for Symbol {
             }
             Symbol::Function(fun) => {
                 if let Symbol::Function(fun1) = other {
+                    return fun.name == fun1.name;
+                }
+                false
+            }
+            Symbol::Statement(fun) => {
+                if let Symbol::Statement(fun1) = other {
                     return fun.name == fun1.name;
                 }
                 false
