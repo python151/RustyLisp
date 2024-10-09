@@ -25,6 +25,10 @@ pub fn construct_symbol_table() -> HashMap::<String, symbol::Symbol> {
         name: "input".to_string(),
         function: input
     })); 
+    symbol_table.insert("str_to_double".to_string(), Symbol::Function(FunctionStruct {
+        name: "str_to_double".to_string(),
+        function: string_to_double
+    }));
     symbol_table.insert("concat".to_string(), Symbol::Function(FunctionStruct {
         name: "concat".to_string(),
         function: concat
@@ -88,6 +92,20 @@ fn print(args: Vec<Symbol>) -> Symbol {
     println!("");
 
     return Symbol::Bool(true)
+}
+
+fn string_to_double(args: Vec<Symbol>) -> Symbol {
+    if args.clone().len() != 1 {
+        panic!("str_to_double must be given exactly one argument");
+    }
+    if let Symbol::Str(x) = args.first().unwrap() {
+        if x.parse::<f64>().is_ok() {
+            return symbol::Symbol::Double(x.parse::<f64>().unwrap());
+        } else {
+            panic!("str_to_double can't parse value {}", x)
+        }
+    }
+    panic!("str_to_double must be given an argument of type String, not {}", args.first().unwrap());
 }
 
 fn input(args: Vec<Symbol>) -> Symbol {
