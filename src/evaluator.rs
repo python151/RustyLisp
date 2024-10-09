@@ -1,9 +1,8 @@
-use std::collections::btree_map::Range;
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use crate::AST::{self, get_first, wrap_symbol, AST_Node};
-use crate::symbol::{FunctionStruct, Symbol};
+use crate::AST::{get_first, wrap_symbol, AST_Node};
+use crate::symbol::Symbol;
 
 pub fn eval(node: Rc<RefCell<AST_Node>>) -> Rc<RefCell<AST_Node>> {
     let sym: Symbol = get_first(node.clone());

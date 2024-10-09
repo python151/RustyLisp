@@ -1,6 +1,4 @@
-use std::collections::btree_map::Range;
-use std::thread::scope;
-use std::{borrow::Borrow, collections::HashMap};
+use std::collections::HashMap;
 use regex::Regex;
 use std::rc::Rc;
 use std::cell::RefCell;
@@ -207,7 +205,7 @@ fn validate_identifiers(tokens: Vec<String>, symbol_table: &mut HashMap<String, 
             .map(|x| {
                 if re_identifier.is_match(&x) && (symbol_table.contains_key(x)) {
                     return Some(x);
-                } else if (re_identifier.is_match(&x)) {
+                } else if re_identifier.is_match(&x) {
                     panic!("I'm not a mind reader you idiot! \"{}\" is undefined.", x);
                 } else if "()".contains(x) {
                     return None;

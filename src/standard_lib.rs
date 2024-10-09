@@ -1,4 +1,6 @@
-use std::{collections::HashMap, fmt::Arguments};
+use std::{collections::HashMap, io};
+use std::io::{Write};
+use std::io::{Read};
 
 use crate::symbol::{self, FunctionStruct, Symbol};
 
@@ -14,6 +16,14 @@ pub fn construct_symbol_table() -> HashMap::<String, symbol::Symbol> {
     symbol_table.insert("assert".to_string(), Symbol::Function(FunctionStruct {
         name: "assert".to_string(),
         function: assert
+    })); 
+    symbol_table.insert("print".to_string(), Symbol::Function(FunctionStruct {
+        name: "print".to_string(),
+        function: print
+    })); 
+    symbol_table.insert("input".to_string(), Symbol::Function(FunctionStruct {
+        name: "input".to_string(),
+        function: input
     })); 
     symbol_table.insert("concat".to_string(), Symbol::Function(FunctionStruct {
         name: "concat".to_string(),
@@ -63,12 +73,36 @@ fn assert(args: Vec<Symbol>) -> Symbol {
     let binding = args.clone();
     let fst = binding.first().unwrap();
     for arg in args {
-        if (fst.clone() != arg) {
+        if fst.clone() != arg {
             panic!("Assertion error! {} != {}", fst, arg);
         }
     }
 
     return Symbol::Bool(true);
+}
+
+fn print(args: Vec<Symbol>) -> Symbol {
+    for arg in args {
+        print!("{} ", arg);
+    }
+    println!("");
+
+    return Symbol::Bool(true)
+}
+
+fn input(args: Vec<Symbol>) -> Symbol {
+    if args.clone().len() > 1 {
+        panic!("input must be given either 0 or 1 arguments");
+    }
+
+    if args.clone().len() == 1 {
+        print!("{}", args.first().unwrap());
+        io::stdout().flush().unwrap();
+    }
+
+    let mut buf = String::new();
+    io::stdin().read_line(&mut buf);
+    return Symbol::Str(buf.trim().to_string());
 }
 
 fn equals(args: Vec<Symbol>) -> Symbol {
@@ -79,7 +113,7 @@ fn equals(args: Vec<Symbol>) -> Symbol {
     let binding = args.clone();
     let fst = binding.first().unwrap();
     for arg in args {
-        if (fst.clone() != arg) {
+        if fst.clone() != arg {
             return Symbol::Bool(false);
         }
     }

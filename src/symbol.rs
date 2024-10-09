@@ -20,7 +20,7 @@ impl fmt::Display for Symbol {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             &Symbol::Sexp => write!(f, "Sexp"),
-            Symbol::Str(s) => write!(f, "String value: {}", s),
+            Symbol::Str(s) => write!(f, "{}", s),
             Symbol::Bool(s) => write!(f, "Bool value: {}", s),
             Symbol::Int(i) => write!(f, "Integer value: {}", i),
             Symbol::Double(s) => write!(f, "Double value: {}", s),
