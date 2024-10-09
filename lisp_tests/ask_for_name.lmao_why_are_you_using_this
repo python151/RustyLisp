@@ -1,0 +1,1 @@
+(print "Her name is" (concat (input "First name: ") " " (input "Last name: ")))

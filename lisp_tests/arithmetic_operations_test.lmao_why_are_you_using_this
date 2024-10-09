@@ -1,0 +1,6 @@
+(assert 1 1)
+(assert (sub 1 1) 0.)
+(assert (add) 0.)
+(assert (mul 1 2) 2.)
+(assert (div 1 2) 0.5)
+(assert (div 2 (mul 1 2 (sub 1 2) (add 3 4 2))) (div -1 9))

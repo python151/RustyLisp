@@ -1,32 +1,14 @@
-use std::collections::btree_map::Range;
-use std::thread::scope;
-use std::{borrow::Borrow, collections::HashMap};
+use std::collections::HashMap;
 use regex::Regex;
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use crate::standard_lib::{add, divide, multiply, subtract};
-use crate::symbol::{self, FunctionStruct, Symbol};
-use crate::AST::{self, wrap_symbol, AST_Node};
+use crate::standard_lib::construct_symbol_table;
+use crate::symbol::{self, Symbol};
+use crate::AST::{wrap_symbol, AST_Node};
 
 pub fn parse(line: String) -> Rc<RefCell<AST_Node>>  {
-    let mut symbol_table = HashMap::<String, symbol::Symbol>::new();
-    symbol_table.insert("add".to_string(), Symbol::Function(FunctionStruct {
-        name: "add".to_string(),
-        function: add
-    })); 
-    symbol_table.insert("sub".to_string(), Symbol::Function(FunctionStruct {
-        name: "subtract".to_string(),
-        function: subtract
-    })); 
-    symbol_table.insert("mul".to_string(), Symbol::Function(FunctionStruct {
-        name: "multiply".to_string(),
-        function: multiply
-    })); 
-    symbol_table.insert("div".to_string(), Symbol::Function(FunctionStruct {
-        name: "divide".to_string(),
-        function: divide
-    })); 
+    let mut symbol_table = construct_symbol_table();
 
     let str_tokens = tokenize_line(&line, &mut symbol_table);
 
@@ -132,6 +114,7 @@ fn parse_strings(line: &String, symbol_table: &mut HashMap<String, symbol::Symbo
             i += 1;
             let sym = symbol::Symbol::Str(cur_str.clone());
             symbol_table.insert(name.clone(), sym); // Insert the symbol
+            cur_str = "".to_string();
             cur_line = format!("{}{}", cur_line, name);
         } else if is_string {
             cur_str = format!("{}{}", cur_str, c);
@@ -222,7 +205,7 @@ fn validate_identifiers(tokens: Vec<String>, symbol_table: &mut HashMap<String, 
             .map(|x| {
                 if re_identifier.is_match(&x) && (symbol_table.contains_key(x)) {
                     return Some(x);
-                } else if (re_identifier.is_match(&x)) {
+                } else if re_identifier.is_match(&x) {
                     panic!("I'm not a mind reader you idiot! \"{}\" is undefined.", x);
                 } else if "()".contains(x) {
                     return None;
