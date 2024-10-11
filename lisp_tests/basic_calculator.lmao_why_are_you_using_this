@@ -1,0 +1,9 @@
+(print (if (equals (input "Do you want to add (y/n)? ") "y") \
+ (add (str_to_double (input "number 1: ")) (str_to_double (input "number 2: "))) \
+ (if (equals (input "Do you want to subtract (y/n)? ") "y") \
+    (sub (str_to_double (input "number 1: ")) (str_to_double (input "number 2: "))) \
+    (if (equals (input "Do you want to multiply (y/n)? ") "y") \
+        (mul (str_to_double (input "number 1: ")) (str_to_double (input "number 2: "))) \
+        (if (equals (input "Do you want to divide (y/n)? ") "y") \
+            (div (str_to_double (input "number 1: ")) (str_to_double (input "number 2: "))) \
+            "You chose not to perform any calculations :(")))))

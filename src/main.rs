@@ -16,6 +16,7 @@ mod AST;
 mod parser;
 mod evaluator;
 mod standard_lib;
+mod statements;
 
 fn interpret_line(str: String) {
     let ast = parse(str);
@@ -79,7 +80,21 @@ fn main() {
 
         // Actually reads file and starts interpretting
         let lines = read_lines(&file_path);
-        lines.iter().for_each(|str: &String| interpret_line(str.clone()));
+        let mut new_lines = Vec::<String>::new();
+        let mut curr_line = "".to_string();
+        for line in lines {
+            curr_line += &line;
+            if line.chars().last().unwrap() != '\\' {
+                new_lines.push(curr_line.to_string());
+                curr_line = "".to_string();
+            } else {
+                curr_line.remove(curr_line.len()-1);
+            }
+        }
+        if curr_line != "" {
+            new_lines.push(curr_line);
+        }
+        new_lines.iter().for_each(|str: &String| interpret_line(str.clone()));
     } else {
         // If no flags are given create interactive shell
         println!("Welcome to my LISP interpreter, or as I like to call it LAUGH (Lisp but an An UnGodly Hellscape)");

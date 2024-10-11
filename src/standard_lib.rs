@@ -2,7 +2,8 @@ use std::{collections::HashMap, io};
 use std::io::{Write};
 use std::io::{Read};
 
-use crate::symbol::{self, FunctionStruct, Symbol};
+use crate::symbol::{self, FunctionStruct, StatementStruct, Symbol};
+use crate::statements::if_statement;
 
 pub fn construct_symbol_table() -> HashMap::<String, symbol::Symbol> {
     let mut symbol_table = HashMap::<String, symbol::Symbol>::new();
@@ -25,6 +26,10 @@ pub fn construct_symbol_table() -> HashMap::<String, symbol::Symbol> {
         name: "input".to_string(),
         function: input
     })); 
+    symbol_table.insert("str_to_double".to_string(), Symbol::Function(FunctionStruct {
+        name: "str_to_double".to_string(),
+        function: string_to_double
+    }));
     symbol_table.insert("concat".to_string(), Symbol::Function(FunctionStruct {
         name: "concat".to_string(),
         function: concat
@@ -41,9 +46,9 @@ pub fn construct_symbol_table() -> HashMap::<String, symbol::Symbol> {
         name: "not".to_string(),
         function: logical_not
     })); 
-    symbol_table.insert("if".to_string(), Symbol::Function(FunctionStruct {
+    symbol_table.insert("if".to_string(), Symbol::Statement(StatementStruct {
         name: "if".to_string(),
-        function: if_statement
+        statement: if_statement
     })); 
     symbol_table.insert("add".to_string(), Symbol::Function(FunctionStruct {
         name: "add".to_string(),
@@ -88,6 +93,20 @@ fn print(args: Vec<Symbol>) -> Symbol {
     println!("");
 
     return Symbol::Bool(true)
+}
+
+fn string_to_double(args: Vec<Symbol>) -> Symbol {
+    if args.clone().len() != 1 {
+        panic!("str_to_double must be given exactly one argument");
+    }
+    if let Symbol::Str(x) = args.first().unwrap() {
+        if x.parse::<f64>().is_ok() {
+            return symbol::Symbol::Double(x.parse::<f64>().unwrap());
+        } else {
+            panic!("str_to_double can't parse value {}", x)
+        }
+    }
+    panic!("str_to_double must be given an argument of type String, not {}", args.first().unwrap());
 }
 
 fn input(args: Vec<Symbol>) -> Symbol {
@@ -137,22 +156,6 @@ fn logical_not(args: Vec<Symbol>) -> Symbol {
 
 fn not_equals(args: Vec<Symbol>) -> Symbol {
     logical_not(vec![equals(args)])
-}
-
-fn if_statement(args: Vec<Symbol>) -> Symbol {
-    if args.clone().len() != 3 {
-        panic!("If statements must have exactly 3 arguments, not {}!", args.clone().len());
-    }
-
-    if let Symbol::Bool(condition) = args.first().unwrap() {
-        if *condition {
-            args.get(1).unwrap().clone()
-        } else {
-            args.last().unwrap().clone()
-        }
-    } else {
-        panic!("First argument to if must be of type Bool, not {}!", args.first().unwrap());
-    }
 }
 
 fn concat(args: Vec<Symbol>) -> Symbol {
