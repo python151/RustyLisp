@@ -10,7 +10,7 @@ pub fn eval(node: Rc<RefCell<AST_Node>>) -> Rc<RefCell<AST_Node>> {
         // Remove the function node
         let args: Vec<_> = node.borrow().subnodes[1..].to_vec();
 
-        // If the child node is a symbol, extract symbol, else evaulate the sexp to get new symbol
+        // If the child node is a value symbol, extract symbol, else evaulate the sexp to get new symbol
         let symbol_args: Vec<Symbol> = args.iter().map(|arg|
             if matches!(arg.clone().borrow().sym, Symbol::Sexp) {
                 eval(arg.clone()).borrow().sym.clone()
